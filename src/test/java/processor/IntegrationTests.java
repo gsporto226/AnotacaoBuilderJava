@@ -287,4 +287,76 @@ public class IntegrationTests {
                 .orElseThrow().getCharContent(false).toString();
         assertThat(actualGeneratedFile, is(expectedClass));
     }
+
+    @Test
+    public void autoBuilder_VarArgs_Success() throws IOException {
+        Compilation compilation =
+                javac()
+                        .withProcessors(new MainProcessor())
+                        .compile(JavaFileObjects.forSourceLines(
+                                "Test",
+                                "import annotations.AutoBuilder;",
+                                "import java.lang.Boolean;",
+                                "class Test {",
+                                "   public @AutoBuilder Test(Object... args) {}",
+                                "}"
+                        ));
+
+        assertThat(compilation).succeeded();
+        String expectedClass = """
+                    import java.lang.Object;
+                    
+                    public class TestBuilder {
+                      private Object[] _args;
+                    
+                      public TestBuilder args(Object[] args) {
+                        this._args = args;
+                        return this;
+                      }
+                    
+                      Test build() {
+                        return new Test(this._args);
+                      }
+                    }
+                    """;
+        String actualGeneratedFile =  compilation.generatedSourceFile("TestBuilder")
+                .orElseThrow().getCharContent(false).toString();
+        assertThat(actualGeneratedFile, is(expectedClass));
+    }
+
+    @Test
+    public void autoBuilder_GenericVarArgs_Success() throws IOException {
+        Compilation compilation =
+                javac()
+                        .withProcessors(new MainProcessor())
+                        .compile(JavaFileObjects.forSourceLines(
+                                "Test",
+                                "import annotations.AutoBuilder;",
+                                "import java.util.List;",
+                                "class Test<T> {",
+                                "   public @AutoBuilder Test(List<T>... args) {}",
+                                "}"
+                        ));
+
+        assertThat(compilation).succeeded();
+        String expectedClass = """
+                    import java.util.List;
+                    
+                    public class TestBuilder<T> {
+                      private List<T>[] _args;
+                    
+                      public TestBuilder args(List<T>[] args) {
+                        this._args = args;
+                        return this;
+                      }
+                    
+                      Test<T> build() {
+                        return new Test<T>(this._args);
+                      }
+                    }
+                    """;
+        String actualGeneratedFile =  compilation.generatedSourceFile("TestBuilder")
+                .orElseThrow().getCharContent(false).toString();
+        assertThat(actualGeneratedFile, is(expectedClass));
+    }
 }

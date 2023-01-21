@@ -30,8 +30,10 @@ public class AutoBuildProcessor {
             packageName = qualifiedNameable.getQualifiedName().toString();
         }
         var modifiers = constructor.getModifiers();
-        @SuppressWarnings("unchecked")
-        List<TypeParameterElement> typeParameterElements = (List<TypeParameterElement>) parentElement.getTypeParameters();
+        List<TypeParameterElement> typeParameterElements = parentElement.getTypeParameters()
+                .stream()
+                .map(t -> (TypeParameterElement) t)
+                .collect(Collectors.toList());
         if (Check.check(modifiers.contains(Modifier.PUBLIC), new Element[]{constructor},"Construtor anotado com @AutoBuilder deve ser público")) {
             var properties = constructor.getParameters()
                     .stream()
