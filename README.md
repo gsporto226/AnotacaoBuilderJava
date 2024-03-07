@@ -1,9 +1,7 @@
 # AnotacaoBuilderJava
 
 ```java
-Esse pacote existe por fins educacionais e não foi feito com a intenção de ser usado para desenvolver sistemas.
-
-Esse pacote define uma anotação que criar Builders automaticamente a partir de construtores.
+Esse pacote define uma anotação que cria Builders automaticamente a partir de construtores.
 
 class Exemplo {
     @AutoBuilder
